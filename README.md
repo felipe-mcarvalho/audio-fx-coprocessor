@@ -8,6 +8,7 @@ AXI4-Lite.
 ```text
 rtl/            núcleo e periférico
 verification/   UVM do núcleo e teste dirigido do periférico
+docs/           Contém relatório técnico e slides da apresentação final
 firmware/       teste de hardware e benchmark
 fpga/           wrapper AXI4-Lite e constraints
 asic/           scripts de síntese, pós-síntese e DFT
