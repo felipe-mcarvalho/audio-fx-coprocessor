@@ -1,0 +1,31 @@
+# Simuladores
+xcelium.d/
+xcelium.d_*/
+cov_work/
+*.log
+*.history
+.simvision/
+xrun.history
+xrun.log
+
+# Genus e resultados regeneráveis
+work/
+work_dft/
+work_elaborate/
+results/
+reports/
+reports_dft/
+deliverables/
+deliverables_dft/
+
+# Firmware
+*.elf
+*.bin
+*.hex
+obj/
+
+# Editores e sistema
+.vscode/
+.idea/
+Thumbs.db
+.DS_Store
