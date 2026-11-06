@@ -3,6 +3,9 @@
 
 #include "audio_regs.h"
 
+/* ========================================================================== */
+/* CONFIGURACAO DO BENCHMARK                                                  */
+/* ========================================================================== */
 #define UART_BAUD_RATE        19200u
 #define EXPECTED_CLOCK_HZ     50000000u
 #define POLL_LIMIT            1000000u
@@ -13,6 +16,9 @@
 static int16_t input_samples[SAMPLE_COUNT];
 static volatile uint32_t benchmark_sink;
 
+/* ========================================================================== */
+/* FUNCOES AUXILIARES                                                        */
+/* ========================================================================== */
 static void io_fence(void) {
   __asm__ volatile ("fence iorw, iorw" ::: "memory");
 }
@@ -97,6 +103,9 @@ static int cycle_counter_available(void) {
   return (end_cycle > start_cycle) ? 1 : 0;
 }
 
+/* ========================================================================== */
+/* CONFIGURACAO E ACESSO AO COPROCESSADOR                                    */
+/* ========================================================================== */
 static int configure_benchmark_path(void) {
   AUDIO_WRITE32(AUDIO_CONTROL_OFFSET, AUDIO_MODE_HARD_CLIP);
   AUDIO_WRITE32(AUDIO_DELAY_OFFSET, 0u);
@@ -122,6 +131,9 @@ static int configure_benchmark_path(void) {
   return 0;
 }
 
+/* ========================================================================== */
+/* MODELO DE REFERENCIA EM SOFTWARE                                          */
+/* ========================================================================== */
 static int16_t software_hard_clip_volume(int16_t input) {
   int32_t scaled_audio;
   int32_t clipped_audio;
@@ -169,6 +181,9 @@ static int hardware_process_sample(int16_t input, int16_t *output) {
   return 0;
 }
 
+/* ========================================================================== */
+/* GERACAO E VALIDACAO DAS AMOSTRAS                                          */
+/* ========================================================================== */
 static uint32_t update_signature(uint32_t signature,
                                  int16_t output,
                                  uint32_t index) {
@@ -238,6 +253,9 @@ static int validate_equivalence(void) {
   return 0;
 }
 
+/* ========================================================================== */
+/* MEDICAO DE DESEMPENHO                                                     */
+/* ========================================================================== */
 static uint64_t benchmark_empty_loop(void) {
   uint64_t start_cycle;
   uint64_t end_cycle;
@@ -322,6 +340,9 @@ static void print_summary_metrics(const char *label,
   neorv32_uart0_puts("\r\n");
 }
 
+/* ========================================================================== */
+/* FLUXO PRINCIPAL                                                           */
+/* ========================================================================== */
 int main(void) {
   uint64_t empty_cycles;
   uint64_t sw_cycles[BENCHMARK_REPETITIONS];

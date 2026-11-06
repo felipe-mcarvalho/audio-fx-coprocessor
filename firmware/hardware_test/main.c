@@ -3,10 +3,16 @@
 
 #include "audio_regs.h"
 
+/* ========================================================================== */
+/* CONFIGURACAO DO TESTE                                                     */
+/* ========================================================================== */
 #define UART_BAUD_RATE       19200u
 #define EXPECTED_CLOCK_HZ    50000000u
 #define POLL_LIMIT           1000000u
 
+/* ========================================================================== */
+/* FUNCOES AUXILIARES                                                        */
+/* ========================================================================== */
 static void io_fence(void) {
   __asm__ volatile ("fence iorw, iorw" ::: "memory");
 }
@@ -23,6 +29,9 @@ static int wait_status(uint32_t mask, uint32_t expected) {
   return -1;
 }
 
+/* ========================================================================== */
+/* CONFIGURACAO E ACESSO AO COPROCESSADOR                                    */
+/* ========================================================================== */
 static int configure_effect(uint32_t mode,
                             uint32_t delay_samples,
                             uint32_t feedback_q8,
@@ -98,6 +107,9 @@ static int check_configuration(const char *label,
   return 0;
 }
 
+/* ========================================================================== */
+/* SEQUENCIA PRINCIPAL DE TESTES                                             */
+/* ========================================================================== */
 int main(void) {
   uint32_t clock_hz;
   uint32_t version;
@@ -136,6 +148,9 @@ int main(void) {
     io_fence();
   }
 
+  /* ------------------------------------------------------------------------ */
+  /* TESTES DOS EFEITOS                                                      */
+  /* ------------------------------------------------------------------------ */
   /* O bitcrusher mantem estado; teste-o antes dos demais modos. */
   failures += check_configuration("CONFIG BITCRUSHER", AUDIO_MODE_BITCRUSHER, 0u, 0u, 256u);
   failures += process_sample("BITCRUSHER QUANTIZE", 1500, 1024);
@@ -161,6 +176,9 @@ int main(void) {
   failures += process_sample("DELAY GAP", 0, 0);
   failures += process_sample("DELAY ECHO", 0, 500);
 
+  /* ------------------------------------------------------------------------ */
+  /* RESULTADO FINAL                                                         */
+  /* ------------------------------------------------------------------------ */
   status = AUDIO_READ32(AUDIO_STATUS_OFFSET);
   if ((status & AUDIO_STATUS_REJECTED) != 0u) {
     neorv32_uart0_printf("REJECTED_WRITE sticky | STATUS=0x%x : FAIL\n", status);
